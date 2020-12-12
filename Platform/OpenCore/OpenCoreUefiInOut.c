@@ -45,6 +45,8 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #include <Library/UefiLib.h>
 #include <Library/UefiRuntimeServicesTableLib.h>
 
+#include <Protocol/AmiSoftKbd.h>
+
 STATIC
 VOID
 EFIAPI
@@ -53,8 +55,9 @@ OcExitBootServicesInputHandler (
   IN VOID         *Context
   )
 {
-  EFI_STATUS        Status;
-  OC_GLOBAL_CONFIG  *Config;
+  EFI_STATUS            Status;
+  OC_GLOBAL_CONFIG      *Config;
+  AMI_SOFT_KBD_PROTOCOL *SoftKbd;
 
   Config = Context;
 
@@ -94,6 +97,11 @@ OcExitBootServicesInputHandler (
         Status
         ));
     }
+  }
+
+  Status = gBS->LocateProtocol (&gAmiSoftKbdProtocolGuid, NULL, (VOID **) &SoftKbd);
+  if (!EFI_ERROR (Status)) {
+    SoftKbd->Stop (SoftKbd);
   }
 }
 
